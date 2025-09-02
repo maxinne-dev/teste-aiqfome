@@ -1,8 +1,9 @@
-.PHONY := help setup lint fix test seed docs docker-up docker-down docker-logs docker-ps docker-rebuild
+.PHONY := help setup lint fix test seed docs docker-up docker-down docker-logs docker-ps docker-rebuild be-bootstrap be-about
 
 help:
 	@echo "Available targets: setup, lint, fix, test, seed, docs"
 	@echo "Docker targets: docker-up, docker-down, docker-logs, docker-ps, docker-rebuild"
+	@echo "Backend targets: be-bootstrap, be-about"
 
 # Placeholder: prepare local dev when code lands
 setup:
@@ -62,3 +63,12 @@ docker-ps:
 docker-rebuild:
 	@echo "[docker] rebuilding images"
 	docker compose -f infra/docker/docker-compose.yml build --no-cache
+
+# Backend (Laravel) bootstrap inside php container
+be-bootstrap:
+	@echo "[backend] bootstrapping Laravel inside php container"
+	docker compose -f infra/docker/docker-compose.yml run --rm php bash -lc "chmod +x /var/www/html/infra/scripts/backend-bootstrap.sh && /var/www/html/infra/scripts/backend-bootstrap.sh"
+
+be-about:
+	@echo "[backend] php artisan about"
+	docker compose -f infra/docker/docker-compose.yml run --rm php bash -lc "cd /var/www/html/backend && php artisan about"

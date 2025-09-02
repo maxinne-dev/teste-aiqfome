@@ -84,6 +84,23 @@ Variáveis de ambiente Laravel esperadas em backend/.env.example (alinhadas ao C
 - Redis: host `redis`, port `6379`
 - Mail: host `mailhog`, port `1025`
 
+## Backend Laravel (Step 03)
+Bootstrap automático dentro do container `php`.
+
+Passos:
+```
+make docker-up           # garante containers
+make be-bootstrap        # instala Laravel 12.x, chaveia APP_KEY, logging JSON, middleware request_id
+make be-about            # executa php artisan about
+```
+
+O bootstrap:
+- Cria projeto em `backend/` via Composer (se não existir)
+- Ajusta `.env` para logs JSON em `stderr`
+- Adiciona `App\Http\Middleware\RequestIdMiddleware` e registra globalmente
+
+Depois, a API deve responder via nginx/php-fpm quando rotas forem adicionadas.
+
 ## Makefile (Planejado)
 Targets: `setup`, `lint`, `fix`, `test`, `seed`, `docs`  
 - lint: Pint + PHPStan + ESLint
