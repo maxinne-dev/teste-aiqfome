@@ -63,6 +63,27 @@ make test                     # roda suíte (placeholder inicialmente)
 ```
 (Enquanto o código não existe, `make` targets serão placeholders.)
 
+## Ambiente Docker (Step 02)
+Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025).
+
+Comandos úteis:
+```
+make docker-up        # sobe stack e builda imagens
+make docker-ps        # status dos serviços
+make docker-logs      # logs (Ctrl+C para sair)
+make docker-down      # encerra e remove volumes
+```
+
+Health básico:
+- Nginx placeholder: http://localhost:8080/
+- Health endpoint: http://localhost:8080/healthz (JSON {"status":"ok"})
+- Mailhog UI: http://localhost:8025
+
+Variáveis de ambiente Laravel esperadas em backend/.env.example (alinhadas ao Compose):
+- Postgres: host `postgres`, db `app`, user `app`, pass `secret`
+- Redis: host `redis`, port `6379`
+- Mail: host `mailhog`, port `1025`
+
 ## Makefile (Planejado)
 Targets: `setup`, `lint`, `fix`, `test`, `seed`, `docs`  
 - lint: Pint + PHPStan + ESLint

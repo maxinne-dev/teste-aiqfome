@@ -1,7 +1,8 @@
-.PHONY := help setup lint fix test seed docs
+.PHONY := help setup lint fix test seed docs docker-up docker-down docker-logs docker-ps docker-rebuild
 
 help:
 	@echo "Available targets: setup, lint, fix, test, seed, docs"
+	@echo "Docker targets: docker-up, docker-down, docker-logs, docker-ps, docker-rebuild"
 
 # Placeholder: prepare local dev when code lands
 setup:
@@ -41,3 +42,23 @@ docs:
 	@echo "[docs] Generating API docs (placeholder)"
 	@echo "- Backend: php artisan scribe:generate"
 
+# Docker helpers (Step 02)
+docker-up:
+	@echo "[docker] compose up -d"
+	docker compose -f infra/docker/docker-compose.yml up -d --build
+
+docker-down:
+	@echo "[docker] compose down"
+	docker compose -f infra/docker/docker-compose.yml down -v
+
+docker-logs:
+	@echo "[docker] tailing logs (Ctrl+C to exit)"
+	docker compose -f infra/docker/docker-compose.yml logs -f --tail=100
+
+docker-ps:
+	@echo "[docker] services status"
+	docker compose -f infra/docker/docker-compose.yml ps
+
+docker-rebuild:
+	@echo "[docker] rebuilding images"
+	docker compose -f infra/docker/docker-compose.yml build --no-cache
