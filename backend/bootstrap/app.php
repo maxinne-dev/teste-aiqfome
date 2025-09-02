@@ -3,6 +3,11 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Exceptions\ProblemDetails;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +20,27 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (ValidationException $e, $request) {
+            $errors = $e->errors();
+            $detail = 'One or more validation errors occurred.';
+            return ProblemDetails::make($request, 422, 'Unprocessable Content', $detail, 'https://datatracker.ietf.org/doc/html/rfc9110#name-422-unprocessable-content', [
+                'errors' => $errors,
+            ]);
+        });
+
+        $exceptions->render(function (ModelNotFoundException $e, $request) {
+            return ProblemDetails::make($request, 404, 'Not Found', 'The requested resource was not found.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-404-not-found');
+        });
+
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            return ProblemDetails::make($request, 404, 'Not Found', 'The requested resource was not found.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-404-not-found');
+        });
+
+        $exceptions->render(function (QueryException $e, $request) {
+            // Postgres unique_violation: 23505
+            if (method_exists($e, 'getCode') && (string)$e->getCode() === '23505') {
+                return ProblemDetails::make($request, 409, 'Conflict', 'A resource with the same unique attribute already exists.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-409-conflict');
+            }
+            return null; // defer to default
+        });
     })->create();
