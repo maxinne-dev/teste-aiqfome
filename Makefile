@@ -1,9 +1,10 @@
-.PHONY := help setup lint fix test seed docs docker-up docker-down docker-logs docker-ps docker-rebuild be-bootstrap be-about
+.PHONY := help setup lint fix test seed docs docker-up docker-down docker-logs docker-ps docker-rebuild be-bootstrap be-about be-migrate
 
 help:
 	@echo "Available targets: setup, lint, fix, test, seed, docs"
 	@echo "Docker targets: docker-up, docker-down, docker-logs, docker-ps, docker-rebuild"
 	@echo "Backend targets: be-bootstrap, be-about"
+	@echo "Migrations: be-migrate"
 
 # Placeholder: prepare local dev when code lands
 setup:
@@ -72,3 +73,7 @@ be-bootstrap:
 be-about:
 	@echo "[backend] php artisan about"
 	docker compose -f infra/docker/docker-compose.yml run --rm php bash -lc "cd /var/www/html/backend && php artisan about"
+
+be-migrate:
+	@echo "[backend] running database migrations"
+	docker compose -f infra/docker/docker-compose.yml run --rm php bash -lc "cd /var/www/html/backend && php artisan migrate --no-interaction"

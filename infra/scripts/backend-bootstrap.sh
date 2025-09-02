@@ -31,9 +31,36 @@ if [ ! -f vendor/autoload.php ]; then
   composer install --no-interaction --prefer-dist
 fi
 
-if [ ! -f .env ] && [ -f .env.example ]; then
-  cp .env.example .env
-fi
+if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi
+
+# Ensure Docker stack DB/Redis/Mail settings
+echo "[bootstrap] Ensuring .env is aligned to Docker services..."
+ensure_env() {
+  local key="$1"; shift
+  local value="$1"; shift
+  if grep -q "^${key}=" .env; then
+    sed -i "s#^${key}=.*#${key}=${value}#" .env
+  else
+    echo "${key}=${value}" >> .env
+  fi
+}
+
+ensure_env DB_CONNECTION pgsql
+ensure_env DB_HOST postgres
+ensure_env DB_PORT 5432
+ensure_env DB_DATABASE app
+ensure_env DB_USERNAME app
+ensure_env DB_PASSWORD secret
+ensure_env REDIS_CLIENT phpredis
+ensure_env REDIS_HOST redis
+ensure_env REDIS_PORT 6379
+ensure_env MAIL_MAILER smtp
+ensure_env MAIL_HOST mailhog
+ensure_env MAIL_PORT 1025
+ensure_env MAIL_USERNAME null
+ensure_env MAIL_PASSWORD null
+ensure_env MAIL_ENCRYPTION null
+ensure_env APP_URL http://localhost:8080
 
 echo "[bootstrap] Ensuring APP_KEY exists..."
 php artisan key:generate --force --quiet || true
