@@ -1,0 +1,20 @@
+* text=auto eol=lf
+
+# Treat common script/config files as text with LF
+*.sh text eol=lf
+*.bash text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+Makefile text eol=lf
+
+# Documentation classification for GitHub linguist
+docs/** linguist-documentation
+**/*.md linguist-documentation
+
+# Export ignores for future archives
+node_modules/ export-ignore
+vendor/ export-ignore
+dist/ export-ignore
+build/ export-ignore
+
