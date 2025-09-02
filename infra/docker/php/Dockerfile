@@ -12,6 +12,9 @@ RUN set -eux; \
       zip; \
     pecl install redis && docker-php-ext-enable redis
 
+# Install Composer (for Laravel create-project)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html/backend
 
 # Tune FPM for dev
@@ -25,4 +28,3 @@ RUN { \
 } > /usr/local/etc/php-fpm.d/zz-dev.conf
 
 CMD ["php-fpm", "-F"]
-

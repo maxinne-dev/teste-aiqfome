@@ -7,9 +7,32 @@ echo "[bootstrap] Working dir: $(pwd)"
 
 if [ ! -f artisan ]; then
   echo "[bootstrap] Installing Laravel 12.x via Composer..."
+  # If directory isn't empty (e.g., .env.example present), preserve it then create project cleanly
+  if [ -f .env.example ]; then
+    mkdir -p /tmp/backend-preserve && cp -f .env.example /tmp/backend-preserve/.env.example
+  fi
+  if [ "$(ls -A)" ]; then
+    echo "[bootstrap] Backend dir not empty; cleaning before create-project (preserving .env.example if existed)"
+    # Remove all contents in current dir
+    find . -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+  fi
   composer create-project laravel/laravel:^12.0 .
+  if [ -f /tmp/backend-preserve/.env.example ]; then
+    echo "[bootstrap] Restoring preserved .env.example"
+    cp -f /tmp/backend-preserve/.env.example .env.example || true
+  fi
 else
   echo "[bootstrap] Laravel already present. Skipping create-project."
+fi
+
+echo "[bootstrap] Ensuring dependencies installed..."
+if [ ! -f vendor/autoload.php ]; then
+  echo "[bootstrap] Installing composer dependencies..."
+  composer install --no-interaction --prefer-dist
+fi
+
+if [ ! -f .env ] && [ -f .env.example ]; then
+  cp .env.example .env
 fi
 
 echo "[bootstrap] Ensuring APP_KEY exists..."
@@ -65,4 +88,3 @@ fi
 
 echo "[bootstrap] Done. Running artisan about:"
 php artisan about || true
-
