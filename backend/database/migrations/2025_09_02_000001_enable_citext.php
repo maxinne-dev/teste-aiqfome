@@ -2,16 +2,21 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS citext');
+        // Only available on PostgreSQL
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS citext');
+        }
     }
 
     public function down(): void
     {
-        DB::statement('DROP EXTENSION IF EXISTS citext');
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement('DROP EXTENSION IF EXISTS citext');
+        }
     }
 };
-

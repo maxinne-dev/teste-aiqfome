@@ -15,8 +15,10 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Convert email to CITEXT for case-insensitive uniqueness (PostgreSQL)
-        DB::statement('ALTER TABLE customers ALTER COLUMN email TYPE CITEXT');
+        // On PostgreSQL, convert email to CITEXT for case-insensitive uniqueness
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE customers ALTER COLUMN email TYPE CITEXT');
+        }
 
         Schema::table('customers', function (Blueprint $table) {
             $table->unique('email');
@@ -28,4 +30,3 @@ return new class extends Migration {
         Schema::dropIfExists('customers');
     }
 };
-
