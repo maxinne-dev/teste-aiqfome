@@ -21,6 +21,30 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Test DB Strategy
+
+- Default: PHPUnit runs with in-memory SQLite for isolation and speed.
+  - Configured in `phpunit.xml`: `DB_CONNECTION=sqlite`, `DB_DATABASE=":memory:"`.
+  - Requires PHP extensions: `pdo_sqlite` and `sqlite3` (enabled in Docker setup).
+- Postgres-specific migrations are guarded.
+  - `citext` extension and `ALTER TYPE` run only when the driver is `pgsql`.
+  - Schema (unique constraints, FKs) remains portable across drivers.
+- Sanctum in tests: product endpoints auto-auth in the base `TestCase` so most tests can hit
+  them without boilerplate; `AuthAbilitiesTest` explicitly verifies auth/abilities flows.
+- Run against Postgres (optional): override DB env vars when invoking PHPUnit, e.g.
+
+  ```bash
+  DB_CONNECTION=pgsql \
+  DB_HOST=postgres \
+  DB_PORT=5432 \
+  DB_DATABASE=app \
+  DB_USERNAME=app \
+  DB_PASSWORD=secret \
+  ./vendor/bin/phpunit
+  ```
+
+  Ensure `pdo_pgsql` is installed if running outside Docker.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
