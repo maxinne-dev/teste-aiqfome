@@ -7,6 +7,9 @@ use App\Exceptions\ProblemDetails;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -42,5 +45,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return ProblemDetails::make($request, 409, 'Conflict', 'A resource with the same unique attribute already exists.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-409-conflict');
             }
             return null; // defer to default
+        });
+
+        $exceptions->render(function (AuthenticationException $e, $request) {
+            return ProblemDetails::make($request, 401, 'Unauthorized', 'Authentication is required to access this resource.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-401-unauthorized');
+        });
+
+        $exceptions->render(function (AuthorizationException|AccessDeniedHttpException $e, $request) {
+            return ProblemDetails::make($request, 403, 'Forbidden', 'You do not have permission to perform this action.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-403-forbidden');
         });
     })->create();
