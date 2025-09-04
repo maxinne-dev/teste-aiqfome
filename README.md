@@ -78,6 +78,20 @@ npm test         # Vitest (AppRendersTest, QueryClientPersistsTest)
 ```
 Configuração de testes: Vitest + @testing-library/react (setup em `src/test/setup.ts`).
 
+## Frontend (Step 15)
+Camada HTTP e Auth inicial:
+- Cliente Axios em `src/lib/httpClient.ts` com `baseURL` via `VITE_API_BASE_URL` (fallback `/api`).
+- Interceptor de `Authorization` (usa token de `src/auth/tokenStore.ts`).
+- Parser de Problem Details e integração com toast (`src/lib/problemDetails.ts` e `src/lib/toast.ts`).
+- `401` dispara fluxo de logout (stub via `triggerLogout()`).
+
+Testes:
+- `AuthInterceptorAddsHeaderTest` valida header `Authorization`.
+- `ProblemDetailsToastTest` valida exibição de toast a partir de Problem Details.
+
+Env:
+- Defina `VITE_API_BASE_URL` em `.env` na raiz de `frontend/` se necessário (ex.: `http://localhost:8080/api`).
+
 ## Ambiente Docker (Step 02)
 Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025).
 

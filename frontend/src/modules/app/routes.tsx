@@ -14,7 +14,16 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   )
 }
 
+function Login() {
+  return (
+    <main style={{ padding: 24 }}>
+      <h1>Login</h1>
+      <p>Please authenticate to continue.</p>
+    </main>
+  )
+}

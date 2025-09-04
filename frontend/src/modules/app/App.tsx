@@ -8,6 +8,7 @@ import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persist
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ThemeProvider } from 'aiq-design-system'
 import { AppRoutes } from './routes'
+import { LogoutListener } from '@/modules/auth/LogoutListener'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ export function App() {
       <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
+            <LogoutListener />
             <AppRoutes />
           </BrowserRouter>
         </QueryClientProvider>
