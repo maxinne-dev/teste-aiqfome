@@ -21,6 +21,25 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## API Documentation
+
+- Real docs via Scribe (preferred):
+  - Install dev deps (`composer install`) to enable Scribe's generator.
+  - Run `php artisan scribe:generate` to produce rich docs.
+  - Config: `config/scribe.php` (OpenAPI 3.0.3; matches `api/*` routes).
+  - Outputs to `public/docs/`.
+- Fallback (when Scribe not installed):
+  - Use `php artisan docs:generate` which generates a minimal OpenAPI file and index.
+  - Outputs to `public/docs/openapi.yaml` and `public/docs/index.html`.
+
+## Developer Commands
+
+- `composer test`: clears config and runs the test suite.
+- `composer lint`: checks code style with Pint (no changes).
+- `composer lint:fix`: fixes code style with Pint.
+- `composer stan`: runs PHPStan (with Larastan) using `phpstan.neon.dist`.
+- `composer docs`: generates API docs (Scribe if installed, fallback otherwise).
+
 ## Test DB Strategy
 
 - Default: PHPUnit runs with in-memory SQLite for isolation and speed.

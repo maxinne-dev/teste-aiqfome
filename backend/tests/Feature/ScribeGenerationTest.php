@@ -12,8 +12,8 @@ class ScribeGenerationTest extends TestCase
 
     public function test_scribe_generate_produces_docs_files(): void
     {
-        // Run the stub doc generator
-        Artisan::call('scribe:generate');
+        // Run docs generator (Scribe if available, else fallback stub)
+        Artisan::call('docs:generate');
 
         $this->assertFileExists(base_path('public/docs/openapi.yaml'));
         $this->assertFileExists(base_path('public/docs/index.html'));
@@ -24,4 +24,3 @@ class ScribeGenerationTest extends TestCase
         $this->assertStringContainsString('/api/v1/customers', $yaml);
     }
 }
-

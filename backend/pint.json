@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/laravel/pint/main/resources/schema.json",
+  "preset": "laravel",
+  "rules": {
+    "array_syntax": {"syntax": "short"},
+    "ordered_imports": true,
+    "no_unused_imports": true
+  },
+  "exclude": [
+    "vendor",
+    "storage",
+    "bootstrap/cache"
+  ]
+}
+
