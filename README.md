@@ -7,7 +7,7 @@ API REST para gerenciamento de clientes e seus produtos favoritos, proxy de prod
 
 ## Stack (Planejada)
 Backend: PHP 8.3, Laravel 12, PostgreSQL, Redis, Sanctum, Scribe  
-Frontend: React 18, TypeScript, Vite, TanStack Query, aiq-design-system, Axios  
+Frontend: React 18, TypeScript, Vite, TanStack Query (persist), aiq-design-system, Axios  
 Infra/Tooling: Docker Compose, Makefile, GitHub Actions (futuro), PHPStan, Pint, ESLint, Prettier
 
 ## Estrutura Planejada
@@ -62,6 +62,21 @@ docker compose up -d          # sobe postgres/redis/php-fpm/nginx
 make test                     # roda suíte (placeholder inicialmente)
 ```
 (Enquanto o código não existe, `make` targets serão placeholders.)
+
+## Frontend (Step 14)
+Bootstrap iniciado em `frontend/` com:
+- Vite + React 18 + TypeScript
+- Router básico (rota `/` com placeholder)
+- TanStack Query + persistência em `localStorage` (chave `rq-cache`)
+- Provider de tema do `@aiqfome/aiq-design-system` (publicado no npm)
+
+Comandos (rodar dentro de `frontend/`):
+```
+npm ci
+npm run dev      # servidor Vite
+npm test         # Vitest (AppRendersTest, QueryClientPersistsTest)
+```
+Configuração de testes: Vitest + @testing-library/react (setup em `src/test/setup.ts`).
 
 ## Ambiente Docker (Step 02)
 Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025).
