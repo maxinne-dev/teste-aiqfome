@@ -1,0 +1,135 @@
+openapi: "3.0.3"
+info:
+  title: "Laravel"
+  version: "1.0.0"
+tags:
+  - 
+    name: "Customers"
+  - 
+    name: "Favorites"
+  - 
+    name: "Products"
+  - 
+    name: "Auth"
+paths:
+  /api/v1/customers:
+    get:
+      tags:
+        - "Customers"
+      summary: "List customers"
+      responses:
+        200:
+          description: "OK"
+    post:
+      tags:
+        - "Customers"
+      summary: "Create customer"
+      responses:
+        201:
+          description: "Created"
+  /api/v1/customers/{id}:
+    parameters:
+      - 
+        name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+    get:
+      tags:
+        - "Customers"
+      summary: "Show customer"
+      responses:
+        200:
+          description: "OK"
+    patch:
+      tags:
+        - "Customers"
+      summary: "Update customer"
+      responses:
+        200:
+          description: "OK"
+    delete:
+      tags:
+        - "Customers"
+      summary: "Delete customer"
+      responses:
+        204:
+          description: "No Content"
+  /api/v1/customers/{id}/favorites:
+    parameters:
+      - 
+        name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+    get:
+      tags:
+        - "Favorites"
+      summary: "List favorites"
+      responses:
+        200:
+          description: "OK"
+    post:
+      tags:
+        - "Favorites"
+      summary: "Add favorite"
+      responses:
+        201:
+          description: "Created"
+  /api/v1/customers/{id}/favorites/{productId}:
+    parameters:
+      - 
+        name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - 
+        name: "productId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+    delete:
+      tags:
+        - "Favorites"
+      summary: "Remove favorite"
+      responses:
+        204:
+          description: "No Content"
+  /api/v1/products:
+    get:
+      tags:
+        - "Products"
+      summary: "List products"
+      security:
+        - 
+          bearerAuth:
+      responses:
+        200:
+          description: "OK"
+  /api/v1/products/{id}:
+    parameters:
+      - 
+        name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+    get:
+      tags:
+        - "Products"
+      summary: "Show product"
+      security:
+        - 
+          bearerAuth:
+      responses:
+        200:
+          description: "OK"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"

@@ -1,0 +1,27 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Tests\TestCase;
+
+class ScribeGenerationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_scribe_generate_produces_docs_files(): void
+    {
+        // Run the stub doc generator
+        Artisan::call('scribe:generate');
+
+        $this->assertFileExists(base_path('public/docs/openapi.yaml'));
+        $this->assertFileExists(base_path('public/docs/index.html'));
+
+        $yaml = file_get_contents(base_path('public/docs/openapi.yaml'));
+        $this->assertStringContainsString('openapi: "3.0.3"', $yaml);
+        $this->assertStringContainsString('Customers', $yaml);
+        $this->assertStringContainsString('/api/v1/customers', $yaml);
+    }
+}
+
