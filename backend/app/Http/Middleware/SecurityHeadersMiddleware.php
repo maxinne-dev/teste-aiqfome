@@ -20,7 +20,11 @@ class SecurityHeadersMiddleware
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-        // Note: HSTS typically only for HTTPS; omitted to avoid issues in local HTTP dev
+        // HSTS only in production and over HTTPS (or forwarded as HTTPS)
+        $isHttps = $request->isSecure() || strtolower((string) $request->headers->get('X-Forwarded-Proto')) === 'https';
+        if (app()->environment('production') && $isHttps) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+        }
 
         return $response;
     }

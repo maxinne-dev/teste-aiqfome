@@ -36,4 +36,17 @@ class ProblemDetailsTest extends TestCase
     {
         $this->markTestSkipped('DB-level unique violation mapping is covered by validation at this stage; full conflict mapping will be validated with dedicated scenarios in a later step.');
     }
+
+    public function test_upstream_timeout_problem_details(): void
+    {
+        // Simulate upstream failure (non-success), which our client maps to ConnectionException
+        \Illuminate\Support\Facades\Http::fake([
+            'https://fakestoreapi.com/products' => \Illuminate\Support\Facades\Http::response([], 500),
+        ]);
+
+        $res = $this->getJson('/api/v1/products');
+        $res->assertStatus(504)
+            ->assertHeader('Content-Type', 'application/problem+json')
+            ->assertJsonStructure(['type', 'title', 'status', 'detail', 'instance']);
+    }
 }

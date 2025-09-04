@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Illuminate\Http\Client\ConnectionException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -52,7 +53,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (QueryException $e, $request) {
             // Postgres unique_violation: 23505
-            if (method_exists($e, 'getCode') && (string)$e->getCode() === '23505') {
+            $code = (string) $e->getCode();
+            $message = (string) $e->getMessage();
+            if ($code === '23505' || ($code === '23000' && str_contains(strtolower($message), 'unique'))) {
                 return ProblemDetails::make($request, 409, 'Conflict', 'A resource with the same unique attribute already exists.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-409-conflict');
             }
             return null; // defer to default
@@ -74,5 +77,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
             }
             return $response;
+        });
+
+        $exceptions->render(function (ConnectionException $e, $request) {
+            return ProblemDetails::make($request, 504, 'Gateway Timeout', 'Upstream service did not respond in time.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-504-gateway-timeout');
         });
     })->create();

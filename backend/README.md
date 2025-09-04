@@ -45,6 +45,19 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
   Ensure `pdo_pgsql` is installed if running outside Docker.
 
+## Security Headers
+
+- Middleware: `App\Http\Middleware\SecurityHeadersMiddleware` adds safe defaults:
+  - `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+    `Referrer-Policy: no-referrer`, `X-XSS-Protection: 0`.
+  - `Cross-Origin-Resource-Policy: same-site`, `Cross-Origin-Opener-Policy: same-origin`,
+    `Permissions-Policy: geolocation=(), microphone=(), camera=()`.
+- HSTS (Strict-Transport-Security): enabled only when both are true:
+  - `APP_ENV=production` and the request is HTTPS (`isSecure()` or `X-Forwarded-Proto: https`).
+  - Behind a proxy/ingress, configure trusted proxies so forwarded proto is honored:
+    https://laravel.com/docs/12.x/requests#trusting-all-proxies
+  - Header value: `max-age=31536000; includeSubDomains; preload`.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
