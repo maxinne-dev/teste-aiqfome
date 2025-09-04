@@ -58,6 +58,25 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
     https://laravel.com/docs/12.x/requests#trusting-all-proxies
   - Header value: `max-age=31536000; includeSubDomains; preload`.
 
+## API Documentation
+
+- Stub generator: `php artisan scribe:generate` produces minimal docs without external
+  dependencies (used for Step 12 tests).
+  - Outputs to `public/docs/openapi.yaml` (OpenAPI 3.0.3) and `public/docs/index.html`.
+  - Tags included: Customers, Favorites, Products, Auth. Products endpoints require
+    bearer tokens in docs.
+- Run:
+
+  ```bash
+  cd backend
+  php artisan scribe:generate
+  ```
+
+  Then open `backend/public/docs/index.html` in a browser.
+
+> Note: To adopt full Scribe later, add the package via Composer and replace this stub
+> with Scribe config (`config/scribe.php`). Tests can be adapted to validate richer output.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
