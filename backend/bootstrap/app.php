@@ -11,6 +11,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,7 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
             'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
+
+        // Global middleware for security headers
+        $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ValidationException $e, $request) {
@@ -58,5 +64,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (AuthorizationException|AccessDeniedHttpException $e, $request) {
             return ProblemDetails::make($request, 403, 'Forbidden', 'You do not have permission to perform this action.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-403-forbidden');
+        });
+
+        $exceptions->render(function (ThrottleRequestsException|TooManyRequestsHttpException $e, $request) {
+            $response = ProblemDetails::make($request, 429, 'Too Many Requests', 'Rate limit exceeded.', 'https://datatracker.ietf.org/doc/html/rfc6585#section-4');
+            if (method_exists($e, 'getHeaders')) {
+                foreach ($e->getHeaders() as $k => $v) {
+                    $response->headers->set($k, $v);
+                }
+            }
+            return $response;
         });
     })->create();
