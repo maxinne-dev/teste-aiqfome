@@ -1,12 +1,36 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import { App } from './modules/app/App'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import App from './root/App';
+import { queryClient, setupQueryPersistence } from './root/queryClient';
 
-const root = document.getElementById('root')
-if (!root) throw new Error('#root element not found')
+// Initialize query cache persistence to localStorage
+setupQueryPersistence();
 
-createRoot(root).render(
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: { main: '#7C3AED' }, // placeholder aligned with design-guide accent
+    secondary: { main: '#00BFA6' }
+  }
+});
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />
+  }
+]);
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ThemeProvider>
   </React.StrictMode>
-)
+);

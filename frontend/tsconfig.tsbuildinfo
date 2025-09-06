@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/__tests__/AppRenders.test.tsx","./src/__tests__/QueryClientPersists.test.ts","./src/root/App.tsx","./src/root/queryClient.ts","./src/test/setup.ts"],"errors":true,"version":"5.9.2"}
