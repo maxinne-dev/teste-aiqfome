@@ -24,8 +24,18 @@ import { SelectedCustomerProvider, useSelectedCustomer } from '@shared/customers
 const drawerWidthOpen = 240;
 const drawerWidthClosed = 64;
 
+const DRAWER_STORAGE_KEY = 'ui_drawer_open';
+
 export default function Shell() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = window.localStorage.getItem(DRAWER_STORAGE_KEY);
+        if (raw !== null) return raw === '1';
+      } catch {}
+    }
+    return false;
+  });
   const { token, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,7 +55,15 @@ export default function Shell() {
             color="inherit"
             edge="start"
             aria-label="open menu"
-            onClick={() => setOpen(true)}
+            onClick={() =>
+              setOpen((prev) => {
+                const next = !prev;
+                try {
+                  window.localStorage.setItem(DRAWER_STORAGE_KEY, next ? '1' : '0');
+                } catch {}
+                return next;
+              })
+            }
             sx={{ mr: 2 }}
           >
             <MenuIcon />
@@ -137,12 +155,44 @@ export default function Shell() {
   );
 }
 
+function initialsFromLabel(label: string | undefined, fallback: string): string {
+  if (!label) return fallback;
+  const name = label.split('<')[0].trim();
+  if (!name) return fallback;
+  const parts = name.split(/\s+/).filter(Boolean);
+  const letters = (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '');
+  return letters.toUpperCase() || fallback;
+}
+
 function SelectedCustomerSummary() {
   const { selectedCustomerId, selectedCustomer } = useSelectedCustomer();
   const label = selectedCustomer?.label ?? (selectedCustomerId ? `Cliente #${selectedCustomerId}` : 'Nenhum cliente');
+  const avFallback = selectedCustomerId ? String(selectedCustomerId)[0] : '—';
+  const initials = initialsFromLabel(selectedCustomer?.label, avFallback);
   return (
-    <Typography variant="body2" color="inherit" noWrap title={label} sx={{ maxWidth: 280 }}>
-      {label}
-    </Typography>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box
+        component="span"
+        sx={{
+          width: 28,
+          height: 28,
+          borderRadius: '50%',
+          bgcolor: 'primary.light',
+          color: 'primary.contrastText',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 12,
+          fontWeight: 700,
+          flex: '0 0 auto'
+        }}
+        aria-hidden
+      >
+        {initials}
+      </Box>
+      <Typography variant="body2" color="inherit" noWrap title={label} sx={{ maxWidth: 240 }}>
+        {label}
+      </Typography>
+    </Box>
   );
 }

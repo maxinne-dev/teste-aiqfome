@@ -1,0 +1,47 @@
+:root {
+  /* Brand */
+  --color-primary: #7b1fa2; /* purple_500 */
+  --color-primary-dark: #580f78; /* purple_700 */
+  --color-primary-light: #eecffc; /* purple_200 */
+  --color-primary-deeper: #2c1138; /* purple_900 */
+  --color-accent: #00a296; /* colorAccent */
+  --color-accent-alt: #4fd2c2; /* colorAccentMenos */
+  --color-accent-quant: #3abdad; /* colorAccentQuant */
+
+  /* Surfaces */
+  --color-bg: #fafafa; /* colorBackgroundPraca */
+  --color-surface: #ffffff; /* cards/toolbars */
+  --color-primary-bg-tint: #f5deff;
+  --color-purple-light: #efdcf8;
+
+  /* Text */
+  --color-text-dark: #263238; /* colorFontDark */
+  --color-text-neutral: #6d6f73; /* neutrals_500 */
+  --color-text-light: #ffffff;
+
+  /* Borders/Dividers */
+  --color-divider: #bfbfbf;
+  --color-border-light: #cdd1d9; /* gray_200 */
+
+  /* Semantic */
+  --color-success: #43a047;
+  --color-warning: #ff5722;
+  --color-error: #f93632; /* red_500 */
+
+  /* Neutrals (subset) */
+  --neutral-50: #f5f6f9;
+  --neutral-200: #cdd1d9;
+  --neutral-400: #a8adb7;
+  --neutral-500: #6d6f73;
+
+  /* Shape / Spacing */
+  --radius-sm: 4px;
+  --radius-card: 8px;
+  --space-8: 8px;
+  --space-24: 24px;
+
+  /* Disabled helpers */
+  --opacity-disabled: 0.38;
+  --opacity-disabled-bg: 0.12;
+}
+
