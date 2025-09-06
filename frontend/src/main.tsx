@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
-import App from './root/App';
+import { router } from './app/routes';
 import { queryClient, setupQueryPersistence } from './root/queryClient';
 
 // Initialize query cache persistence to localStorage
@@ -16,13 +16,6 @@ const theme = createTheme({
     secondary: { main: '#00BFA6' }
   }
 });
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />
-  }
-]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
