@@ -14,6 +14,8 @@ import {
   Typography
 } from '@mui/material';
 import { useCustomers } from '../hooks';
+import { ListSkeleton } from '@shared/components/ListSkeleton';
+import { EmptyState } from '@shared/components/EmptyState';
 
 export default function CustomersListPage() {
   const [sp, setSp] = useSearchParams();
@@ -54,7 +56,7 @@ export default function CustomersListPage() {
         </Button>
       </Stack>
 
-      {isLoading && <Typography>Carregando...</Typography>}
+      {isLoading && <ListSkeleton rows={6} />}
 
       {!isLoading && (
         <Table size="small" aria-label="customers-table">
@@ -78,7 +80,9 @@ export default function CustomersListPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={2}>Nenhum cliente encontrado</TableCell>
+                <TableCell colSpan={2}>
+                  <EmptyState message="Nenhum cliente encontrado" />
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -87,4 +91,3 @@ export default function CustomersListPage() {
     </Box>
   );
 }
-

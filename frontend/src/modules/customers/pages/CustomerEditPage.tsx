@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Stack, TextField, Typography, Skeleton } from '@mui/material';
 import { CustomerForm } from '../components/CustomerForm';
 import { useCustomer, useUpdateCustomer } from '../hooks';
 import { useAddFavorite, useFavorites, useRemoveFavorite } from '@modules/favorites/hooks';
@@ -8,7 +8,7 @@ import { useAddFavorite, useFavorites, useRemoveFavorite } from '@modules/favori
 export default function CustomerEditPage() {
   const params = useParams();
   const id = Number(params.id);
-  const { data } = useCustomer(id);
+  const { data, isLoading: loadingCustomer } = useCustomer(id);
   const { mutateAsync, isPending } = useUpdateCustomer(id);
   const navigate = useNavigate();
 
@@ -25,14 +25,22 @@ export default function CustomerEditPage() {
       <Typography variant="h4" sx={{ my: 2 }}>
         Editar Cliente
       </Typography>
-      <CustomerForm
-        initial={initial}
-        submitLabel={isPending ? 'Salvando...' : 'Salvar'}
-        onSubmit={async (values) => {
-          await mutateAsync(values);
-          navigate('/customers');
-        }}
-      />
+      {loadingCustomer ? (
+        <Stack spacing={2} data-testid="loading-skeleton">
+          <Skeleton variant="rectangular" height={56} />
+          <Skeleton variant="rectangular" height={56} />
+          <Skeleton variant="rectangular" height={36} width={120} />
+        </Stack>
+      ) : (
+        <CustomerForm
+          initial={initial}
+          submitLabel={isPending ? 'Salvando...' : 'Salvar'}
+          onSubmit={async (values) => {
+            await mutateAsync(values);
+            navigate('/customers');
+          }}
+        />
+      )}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" gutterBottom>
           Favoritos

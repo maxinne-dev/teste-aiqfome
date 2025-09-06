@@ -6,7 +6,8 @@ export function useFavorites(customerId: number, params: { page?: number } = {})
   const query = useQuery({
     queryKey,
     queryFn: () => listFavorites(customerId, params),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    enabled: !!customerId
   });
   return { ...query, queryKey };
 }
@@ -30,4 +31,3 @@ export function useRemoveFavorite(customerId: number) {
     }
   });
 }
-
