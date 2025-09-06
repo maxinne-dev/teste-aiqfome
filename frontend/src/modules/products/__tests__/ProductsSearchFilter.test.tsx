@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import ProductsPage from '../pages/ProductsPage';
 import { http } from '@shared/http/client';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 
 describe('Products search + category filter', () => {
   it('filters client-side without refetch', async () => {
@@ -24,7 +25,9 @@ describe('Products search + category filter', () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryClientProvider client={qc}>
-          <RouterProvider router={router} />
+          <SelectedCustomerProvider>
+            <RouterProvider router={router} />
+          </SelectedCustomerProvider>
         </QueryClientProvider>
       </ThemeProvider>
     );

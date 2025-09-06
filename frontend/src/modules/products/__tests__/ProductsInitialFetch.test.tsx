@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import ProductsPage from '../pages/ProductsPage';
 import { http } from '@shared/http/client';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 
 describe('Products initial fetch', () => {
   it('renders products from API', async () => {
@@ -23,7 +24,9 @@ describe('Products initial fetch', () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryClientProvider client={qc}>
-          <RouterProvider router={router} />
+          <SelectedCustomerProvider>
+            <RouterProvider router={router} />
+          </SelectedCustomerProvider>
         </QueryClientProvider>
       </ThemeProvider>
     );
@@ -33,4 +36,3 @@ describe('Products initial fetch', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });
-

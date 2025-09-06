@@ -6,6 +6,7 @@ import ProductsPage from '@modules/products/pages/ProductsPage';
 import { RequireAuth } from '@app/RequireAuth';
 import LoginPage from '@modules/auth/pages/LoginPage';
 import { AuthProvider } from '@shared/auth/AuthContext';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 import { http } from '@shared/http/client';
 
 describe('Login flow', () => {
@@ -31,7 +32,9 @@ describe('Login flow', () => {
         <CssBaseline />
         <QueryClientProvider client={qc}>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <SelectedCustomerProvider>
+              <RouterProvider router={router} />
+            </SelectedCustomerProvider>
           </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import ProductsPage from '../pages/ProductsPage';
 import { http } from '@shared/http/client';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 
 describe('Products favorite toggle', () => {
   it('toggles favorite on product card for selected customer', async () => {
@@ -31,7 +32,9 @@ describe('Products favorite toggle', () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryClientProvider client={qc}>
-          <RouterProvider router={router} />
+          <SelectedCustomerProvider initialId={1}>
+            <RouterProvider router={router} />
+          </SelectedCustomerProvider>
         </QueryClientProvider>
       </ThemeProvider>
     );
@@ -39,8 +42,7 @@ describe('Products favorite toggle', () => {
     // initial products render
     const card = await screen.findByLabelText('product-2');
 
-    // set customer id to enable favorites
-    fireEvent.change(screen.getByLabelText('Customer ID'), { target: { value: '1' } });
+    // selected customer id is provided via context
     await waitFor(() => expect(getMock).toHaveBeenCalledTimes(2));
 
     // Click Favoritar, then expect button to become Desfavoritar

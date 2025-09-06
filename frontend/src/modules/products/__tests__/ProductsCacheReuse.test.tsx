@@ -3,6 +3,7 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProductsPage from '../pages/ProductsPage';
 import { http } from '@shared/http/client';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 
 describe('Products cache reuse', () => {
   it('reuses cached list without refetch', async () => {
@@ -20,7 +21,9 @@ describe('Products cache reuse', () => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <QueryClientProvider client={qc}>
-            <ProductsPage />
+            <SelectedCustomerProvider>
+              <ProductsPage />
+            </SelectedCustomerProvider>
           </QueryClientProvider>
         </ThemeProvider>
       );

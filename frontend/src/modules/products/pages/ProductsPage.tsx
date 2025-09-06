@@ -14,16 +14,17 @@ import {
 } from '@mui/material';
 import { useProducts, useProductFilters } from '../hooks';
 import { useFavorites, useAddFavorite, useRemoveFavorite } from '@modules/favorites/hooks';
+import { useSelectedCustomer } from '@shared/customers/SelectedCustomerContext';
 import { CardsSkeleton } from '@shared/components/CardsSkeleton';
 
 export default function ProductsPage() {
   const { data: products, isLoading } = useProducts();
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState('');
-  const [customerId, setCustomerId] = React.useState('');
   const { categories, filtered } = useProductFilters(products, search, category);
-  const customerIdNum = Number(customerId);
-  const hasCustomer = Number.isFinite(customerIdNum) && customerIdNum > 0;
+  const { selectedCustomerId } = useSelectedCustomer();
+  const customerIdNum = selectedCustomerId ?? 0;
+  const hasCustomer = customerIdNum > 0;
   const { data: favs } = useFavorites(hasCustomer ? customerIdNum : 0);
   const { mutateAsync: addFav, isPending: adding } = useAddFavorite(hasCustomer ? customerIdNum : 0);
   const { mutateAsync: removeFav, isPending: removing } = useRemoveFavorite(hasCustomer ? customerIdNum : 0);
@@ -49,13 +50,7 @@ export default function ProductsPage() {
             </MenuItem>
           ))}
         </Select>
-        <TextField
-          label="Customer ID"
-          type="number"
-          value={customerId}
-          onChange={(e) => setCustomerId(e.target.value)}
-          placeholder="para favoritar/desfavoritar"
-        />
+        {/* Customer selection moved to global drawer selector */}
       </Stack>
 
       {isLoading && <CardsSkeleton count={6} />}

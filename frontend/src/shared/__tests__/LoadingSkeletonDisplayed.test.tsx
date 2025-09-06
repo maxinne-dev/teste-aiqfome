@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import ProductsPage from '@modules/products/pages/ProductsPage';
 import { http } from '@shared/http/client';
+import { SelectedCustomerProvider } from '@shared/customers/SelectedCustomerContext';
 
 describe('Loading skeleton', () => {
   it('displays while products load', async () => {
@@ -21,7 +22,9 @@ describe('Loading skeleton', () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryClientProvider client={qc}>
-          <RouterProvider router={router} />
+          <SelectedCustomerProvider>
+            <RouterProvider router={router} />
+          </SelectedCustomerProvider>
         </QueryClientProvider>
       </ThemeProvider>
     );
@@ -31,4 +34,3 @@ describe('Loading skeleton', () => {
     await screen.findByRole('grid', { hidden: true }).catch(() => {});
   });
 });
-
