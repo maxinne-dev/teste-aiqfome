@@ -7,6 +7,8 @@ function Boom() {
 
 describe('Global error boundary', () => {
   it('renders fallback UI when a child throws', () => {
+    // @ts-ignore suppress React error boundary console noise in tests
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(
       <AppErrorBoundary>
         <Boom />
@@ -14,6 +16,6 @@ describe('Global error boundary', () => {
     );
     expect(screen.getByText(/algo deu errado/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /recarregar/i })).toBeInTheDocument();
+    spy.mockRestore();
   });
 });
-
