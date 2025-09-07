@@ -25,7 +25,12 @@ describe('Login flow', () => {
       }
     ], { initialEntries: ['/products'] });
 
-    const spy = vi.spyOn(http, 'get').mockResolvedValueOnce({ data: [] } as any);
+    const getSpy = vi.spyOn(http, 'get');
+    // First GET: dev users list for login page
+    getSpy.mockResolvedValueOnce({ data: { users: [{ id: 1, email: 'test@example.com', name: 'Test', isDefault: true }] } } as any);
+    // Second GET: products after login
+    getSpy.mockResolvedValueOnce({ data: [] } as any);
+    const postSpy = vi.spyOn(http, 'post').mockResolvedValueOnce({ data: { token: 'token-123' } } as any);
 
     render(
       <ThemeProvider theme={theme}>
@@ -43,11 +48,12 @@ describe('Login flow', () => {
     // We should land on Login
     expect(await screen.findByText(/login/i)).toBeInTheDocument();
 
-    // Fill token and submit
-    fireEvent.change(await screen.findByPlaceholderText(/paste your token here/i), { target: { value: 'token-123' } });
+    // Wait for the user selector to load and submit with default user selected
+    await screen.findByLabelText(/usuário/i);
     fireEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
     // Should navigate to /products and trigger fetch
-    await waitFor(() => expect(spy).toHaveBeenCalled());
+    await waitFor(() => expect(postSpy).toHaveBeenCalled());
+    await waitFor(() => expect(getSpy).toHaveBeenCalledTimes(2));
   });
 });

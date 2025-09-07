@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\DevAuthController;
 
 Route::prefix('v1')->group(function () {
     // Read endpoints (no auth required by tests)
@@ -21,4 +22,10 @@ Route::prefix('v1')->group(function () {
     // Products endpoints require token with products:read ability and are read-only
     Route::get('products', [ProductController::class, 'index'])->middleware(['auth:sanctum', 'abilities:products:read', 'throttle:api-read']);
     Route::get('products/{id}', [ProductController::class, 'show'])->middleware(['auth:sanctum', 'abilities:products:read', 'throttle:api-read']);
+
+    // Dev helpers: list users and issue tokens (for local testing)
+    if (config('features.dev_auth_routes')) {
+        Route::get('dev/users', [DevAuthController::class, 'users'])->middleware('throttle:api-read');
+        Route::post('dev/token', [DevAuthController::class, 'issueToken'])->middleware('throttle:api-write');
+    }
 });

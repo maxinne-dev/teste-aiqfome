@@ -93,7 +93,7 @@ Env:
 - Defina `VITE_API_BASE_URL` em `.env` na raiz de `frontend/` se necessário (ex.: `http://localhost:8080/api`).
 
 ## Ambiente Docker (Step 02)
-Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025).
+Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025), frontend (Vite 5173).
 
 Comandos úteis:
 ```
@@ -104,8 +104,10 @@ make docker-down      # encerra e remove volumes
 ```
 
 Health básico:
-- Nginx placeholder: http://localhost:8080/
+- API via Nginx: http://localhost:8080/
 - Health endpoint: http://localhost:8080/healthz (JSON {"status":"ok"})
+- Frontend (Vite) via Nginx: http://localhost:8080/app/
+  - Também direto: http://localhost:5173 (porta exposta)
 - Mailhog UI: http://localhost:8025
 
 Variáveis de ambiente Laravel esperadas em backend/.env.example (alinhadas ao Compose):

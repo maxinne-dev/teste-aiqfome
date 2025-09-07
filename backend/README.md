@@ -64,6 +64,22 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
   Ensure `pdo_pgsql` is installed if running outside Docker.
 
+## Dev/Test Helpers
+
+These convenience endpoints help during local testing to pick a user and obtain a bearer token (Sanctum):
+
+- GET `/api/v1/dev/users`: lists users as `{ id, name, email, isDefault }` and includes `default_user_id` and `default_email`.
+  - If `test@example.com` exists, it appears first with `isDefault: true`.
+- POST `/api/v1/dev/token`: issues a token for a given email.
+  - Body: `{ "email": "user@example.com", "abilities": ["products:read"] }`.
+  - `abilities` can be an array or a comma-separated string. If omitted, defaults to `products:read`.
+  - Special case: if `email` is `test@example.com`, the token is created with `['*']` (all abilities) to facilitate admin-style tests.
+
+Rate limits: `throttle:api-read` for the list endpoint, `throttle:api-write` for token issuance.
+
+Feature flag: disabled by default. Enable with `FEATURE_DEV_AUTH_ROUTES=true` in `backend/.env` and reload config.
+When disabled, the routes are not registered.
+
 ## Security Headers
 
 - Middleware: `App\Http\Middleware\SecurityHeadersMiddleware` adds safe defaults:
