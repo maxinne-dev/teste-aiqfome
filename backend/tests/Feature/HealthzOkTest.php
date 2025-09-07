@@ -24,4 +24,3 @@ class HealthzOkTest extends TestCase
             );
     }
 }
-

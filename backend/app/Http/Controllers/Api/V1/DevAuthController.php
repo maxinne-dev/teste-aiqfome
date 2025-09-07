@@ -28,8 +28,13 @@ class DevAuthController extends Controller
         usort($users, function ($a, $b) use ($defaultEmail, &$defaultUserId) {
             $aIsDefault = strcasecmp($a['email'], $defaultEmail) === 0;
             $bIsDefault = strcasecmp($b['email'], $defaultEmail) === 0;
-            if ($aIsDefault && !$bIsDefault) return -1;
-            if ($bIsDefault && !$aIsDefault) return 1;
+            if ($aIsDefault && ! $bIsDefault) {
+                return -1;
+            }
+            if ($bIsDefault && ! $aIsDefault) {
+                return 1;
+            }
+
             return strcasecmp($a['email'], $b['email']);
         });
 
@@ -80,7 +85,7 @@ class DevAuthController extends Controller
         }
 
         // Default ability mirrors the console command behavior
-        if (!$abilities || count($abilities) === 0) {
+        if (! $abilities || count($abilities) === 0) {
             $abilities = ['products:read'];
         }
 
@@ -102,4 +107,3 @@ class DevAuthController extends Controller
         ], 201);
     }
 }
-

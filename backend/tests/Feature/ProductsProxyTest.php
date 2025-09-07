@@ -63,6 +63,7 @@ class ProductsProxyTest extends TestCase
             if ($attempts === 1) {
                 return Http::response(['error' => 'upstream down'], 500);
             }
+
             return Http::response([
                 ['id' => 1, 'title' => 'Recovered'],
             ], 200);
@@ -74,4 +75,3 @@ class ProductsProxyTest extends TestCase
         $this->assertTrue($attempts >= 2, 'Expected at least 2 attempts due to retry');
     }
 }
-

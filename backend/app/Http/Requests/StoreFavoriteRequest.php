@@ -18,4 +18,3 @@ class StoreFavoriteRequest extends FormRequest
         ];
     }
 }
-

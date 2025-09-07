@@ -1,20 +1,20 @@
 <?php
 
+use App\Exceptions\ProblemDetails;
+use App\Http\Middleware\RequestIdMiddleware;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Exceptions\ProblemDetails;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
-use Illuminate\Http\Client\ConnectionException;
-use App\Http\Middleware\RequestIdMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -40,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ValidationException $e, $request) {
             $errors = $e->errors();
             $detail = 'One or more validation errors occurred.';
+
             return ProblemDetails::make($request, 422, 'Unprocessable Content', $detail, 'https://datatracker.ietf.org/doc/html/rfc9110#name-422-unprocessable-content', [
                 'errors' => $errors,
             ]);
@@ -60,6 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($code === '23505' || ($code === '23000' && str_contains(strtolower($message), 'unique'))) {
                 return ProblemDetails::make($request, 409, 'Conflict', 'A resource with the same unique attribute already exists.', 'https://datatracker.ietf.org/doc/html/rfc9110#name-409-conflict');
             }
+
             return null; // defer to default
         });
 
@@ -78,6 +80,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $response->headers->set($k, $v);
                 }
             }
+
             return $response;
         });
 

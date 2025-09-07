@@ -19,4 +19,3 @@ class SecurityHeadersPresenceTest extends TestCase
         $res->assertHeader('Referrer-Policy', 'no-referrer');
     }
 }
-

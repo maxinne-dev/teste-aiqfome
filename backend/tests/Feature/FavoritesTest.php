@@ -53,4 +53,3 @@ class FavoritesTest extends TestCase
         ]);
     }
 }
-

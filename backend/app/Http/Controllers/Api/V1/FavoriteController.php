@@ -46,4 +46,3 @@ class FavoriteController extends Controller
         return response()->noContent();
     }
 }
-

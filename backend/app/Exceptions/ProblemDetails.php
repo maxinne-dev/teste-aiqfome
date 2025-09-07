@@ -10,7 +10,7 @@ class ProblemDetails
     /**
      * Create a Problem Details JSON response (RFC 9457).
      *
-     * @param array<string,mixed> $extra Additional members (e.g., errors)
+     * @param  array<string,mixed>  $extra  Additional members (e.g., errors)
      */
     public static function make(Request $request, int $status, string $title, ?string $detail = null, ?string $type = null, array $extra = []): JsonResponse
     {
@@ -27,4 +27,3 @@ class ProblemDetails
         ]);
     }
 }
-

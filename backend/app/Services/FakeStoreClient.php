@@ -18,7 +18,7 @@ class FakeStoreClient
             ->retry(3, 200, throw: false)
             ->get('/products');
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new ConnectionException('Failed to fetch products from upstream');
         }
 
@@ -34,11 +34,10 @@ class FakeStoreClient
             ->retry(3, 200, throw: false)
             ->get('/products/'.$id);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new ConnectionException('Failed to fetch product from upstream');
         }
 
         return $response->json();
     }
 }
-

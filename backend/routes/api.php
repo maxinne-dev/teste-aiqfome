@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\DevAuthController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\ProductController;
-use App\Http\Controllers\Api\V1\DevAuthController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Read endpoints (no auth required by tests)

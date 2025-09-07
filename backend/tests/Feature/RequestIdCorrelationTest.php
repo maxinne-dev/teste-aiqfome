@@ -26,7 +26,7 @@ class RequestIdCorrelationTest extends TestCase
         $this->assertNotEmpty($res->headers->get('X-Request-Id'));
         // Logger context was enriched
         Log::shouldHaveReceived('withContext')->withArgs(function ($context) {
-            return !empty($context['request_id']);
+            return ! empty($context['request_id']);
         })->atLeast()->once();
     }
 }

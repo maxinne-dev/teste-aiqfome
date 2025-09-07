@@ -34,4 +34,3 @@ class RateLimitHeadersContractTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $retryAfter);
     }
 }
-
