@@ -10,7 +10,7 @@
     "vendor",
     "storage",
     "bootstrap/cache",
-    "var/phpstan/resultCache.php"
+    "var/phpstan"
   ]
 }
 
