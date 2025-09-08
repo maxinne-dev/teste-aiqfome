@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
 class AuthAbilitiesTest extends TestCase
 {
@@ -14,6 +14,7 @@ class AuthAbilitiesTest extends TestCase
     private function token(array $abilities): string
     {
         $user = User::factory()->create();
+
         return $user->createToken('test', $abilities)->plainTextToken;
     }
 

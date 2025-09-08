@@ -15,6 +15,7 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::query()->latest('id')->paginate(15);
+
         return CustomerResource::collection($customers);
     }
 
@@ -28,7 +29,7 @@ class CustomerController extends Controller
         $customer = Customer::create($request->validated());
 
         $resource = new CustomerResource($customer);
-        $location = URL::to('/api/v1/customers/' . $customer->id);
+        $location = URL::to('/api/v1/customers/'.$customer->id);
 
         return $resource->response()->setStatusCode(Response::HTTP_CREATED)->header('Location', $location);
     }
@@ -36,13 +37,14 @@ class CustomerController extends Controller
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
         $customer->update($request->validated());
+
         return new CustomerResource($customer);
     }
 
     public function destroy(Customer $customer)
     {
         $customer->delete();
+
         return response()->noContent();
     }
 }
-

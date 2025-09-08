@@ -1,11 +1,9 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Filesystem\Filesystem;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -25,10 +23,11 @@ Artisan::command('user:token {email} {--abilities=*}', function (string $email, 
 Artisan::command('docs:generate', function () {
     if (class_exists(\Knuckles\Scribe\Commands\GenerateDocumentation::class)) {
         $this->info('Using Scribe to generate API documentation...');
+
         return \Artisan::call('scribe:generate');
     }
     $basePath = base_path('public/docs');
-    if (!is_dir($basePath)) {
+    if (! is_dir($basePath)) {
         mkdir($basePath, 0777, true);
     }
 
@@ -107,24 +106,27 @@ Artisan::command('docs:generate', function () {
                         if (is_array($item)) {
                             $out .= $prefix."  - \n".$yaml($item, $indent + 2);
                         } else {
-                            $out .= $prefix."  - ".(is_string($item) ? '"'.str_replace('"','\"',$item).'"' : $item)."\n";
+                            $out .= $prefix.'  - '.(is_string($item) ? '"'.str_replace('"', '\"', $item).'"' : $item)."\n";
                         }
                     }
                 } else {
                     $out .= "$prefix$key:\n".$yaml($value, $indent + 1);
                 }
             } else {
-                $val = is_string($value) ? '"'.str_replace('"','\"',$value).'"' : ($value === null ? 'null' : ($value ? 'true' : 'false'));
-                if (is_numeric($value)) { $val = $value; }
+                $val = is_string($value) ? '"'.str_replace('"', '\"', $value).'"' : ($value === null ? 'null' : ($value ? 'true' : 'false'));
+                if (is_numeric($value)) {
+                    $val = $value;
+                }
                 $out .= "$prefix$key: $val\n";
             }
         }
+
         return $out;
     };
 
     file_put_contents($basePath.'/openapi.yaml', $yaml($openapi));
 
-    $html = <<<HTML
+    $html = <<<'HTML'
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>API Docs</title></head>
 <body>
@@ -138,14 +140,14 @@ HTML;
 })->purpose('Generate API documentation (Scribe if available, fallback stub)');
 
 // Backward-compat alias for environments without Scribe. Only register if Scribe is not present
-if (!class_exists(\Knuckles\Scribe\Commands\GenerateDocumentation::class)) {
+if (! class_exists(\Knuckles\Scribe\Commands\GenerateDocumentation::class)) {
     Artisan::command('scribe:generate', function () {
         return \Artisan::call('docs:generate');
     })->purpose('Alias to docs:generate when Scribe is not installed');
 }
 
 Artisan::command('code:analyze', function () {
-    $fs = new Filesystem();
+    $fs = new Filesystem;
     $root = base_path();
     $dirs = ['app', 'routes', 'tests'];
     $bannedNames = ['dd', 'dump', 'var_dump'];
@@ -154,7 +156,9 @@ Artisan::command('code:analyze', function () {
     $issues = [];
     foreach ($dirs as $dir) {
         foreach ($fs->allFiles($root.'/'.$dir) as $file) {
-            if ($file->getExtension() !== 'php') continue;
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
             $contents = $fs->get($file->getRealPath());
             $tokens = token_get_all($contents);
             for ($i = 0; $i < count($tokens); $i++) {
@@ -171,12 +175,15 @@ Artisan::command('code:analyze', function () {
                             'file' => str_replace($root.'/', '', $file->getRealPath()),
                             'issue' => "Forbidden call 'exit/die'",
                         ];
+
                         continue;
                     }
                     if ($id === T_STRING && in_array($text, $bannedNames, true)) {
                         // Look ahead for '('
                         $j = $i + 1;
-                        while ($j < count($tokens) && is_array($tokens[$j]) && in_array($tokens[$j][0], [T_WHITESPACE], true)) { $j++; }
+                        while ($j < count($tokens) && is_array($tokens[$j]) && in_array($tokens[$j][0], [T_WHITESPACE], true)) {
+                            $j++;
+                        }
                         if ($j < count($tokens) && $tokens[$j] === '(') {
                             $issues[] = [
                                 'file' => str_replace($root.'/', '', $file->getRealPath()),
@@ -196,7 +203,7 @@ Artisan::command('code:analyze', function () {
         ],
     ];
 
-    if (!$fs->isDirectory(storage_path('app'))) {
+    if (! $fs->isDirectory(storage_path('app'))) {
         $fs->makeDirectory(storage_path('app'), 0777, true);
     }
     $fs->put(storage_path('app/analysis-report.json'), json_encode($report, JSON_PRETTY_PRINT));

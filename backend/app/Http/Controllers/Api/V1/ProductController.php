@@ -10,15 +10,13 @@ use Illuminate\Support\Facades\Response;
 
 class ProductController extends Controller
 {
-    public function __construct(private readonly FakeStoreClient $client)
-    {
-    }
+    public function __construct(private readonly FakeStoreClient $client) {}
 
     public function index(Request $request)
     {
         $key = 'products:all';
         $cached = Cache::get($key);
-        if (!$cached) {
+        if (! $cached) {
             $data = $this->client->listProducts();
             $etag = 'W/"'.sha1(json_encode($data)).'"';
             $lastModified = now()->toRfc7231String();
@@ -39,7 +37,7 @@ class ProductController extends Controller
     {
         $key = "products:{$id}";
         $cached = Cache::get($key);
-        if (!$cached) {
+        if (! $cached) {
             $data = $this->client->showProduct($id);
             $etag = 'W/"'.sha1(json_encode($data)).'"';
             $lastModified = now()->toRfc7231String();
@@ -56,4 +54,3 @@ class ProductController extends Controller
             ->header('Last-Modified', $cached['last_modified']);
     }
 }
-

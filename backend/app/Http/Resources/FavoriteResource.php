@@ -20,4 +20,3 @@ class FavoriteResource extends JsonResource
         ];
     }
 }
-

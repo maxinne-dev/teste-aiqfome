@@ -20,4 +20,3 @@ class OpenApiSchemaContainsCustomersTest extends TestCase
         $this->assertStringContainsString('/api/v1/customers/{id}', $yaml);
     }
 }
-

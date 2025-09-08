@@ -43,7 +43,7 @@ class HealthController extends Controller
             $res = Http::retry(1, 50, throw: false)
                 ->timeout(1)
                 ->get('https://fakestoreapi.com/products?limit=1');
-            if (!$res->successful()) {
+            if (! $res->successful()) {
                 throw new \RuntimeException('upstream non-200');
             }
         } catch (Throwable $e) {

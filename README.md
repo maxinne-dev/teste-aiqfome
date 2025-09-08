@@ -1,168 +1,95 @@
 # AiqFome Teste — Monorepo (Backend Laravel + Frontend React)
 
-Projeto documentation-first: iniciamos pelos planos e roadmap antes do código. Este README consolida os pontos essenciais para onboarding rápido.
+Este projeto é uma aplicação full-stack com uma API REST e um cliente Single Page Application (SPA). Foi desenvolvido com uma abordagem *documentation-first*, focando na criação de um sistema que é incremental, testável e alinhado com práticas modernas de qualidade e segurança.
+
+Este documento fornece uma visão geral de alto nível. Para documentação detalhada e específica de cada área, por favor consulte:
+- **[README do Backend](./backend/README.md)**
+- **[README do Frontend](./frontend/README.md)**
 
 ## Visão Geral
-API REST para gerenciamento de clientes e seus produtos favoritos, proxy de produtos via Fake Store API com cache e headers HTTP (ETag). Frontend SPA (React + aiq-design-system) consumirá a API. Foco: incremental, testável e alinhado a boas práticas de qualidade e segurança.
 
-## Stack (Planejada)
-Backend: PHP 8.3, Laravel 12, PostgreSQL, Redis, Sanctum, Scribe  
-Frontend: React 18, TypeScript, Vite, TanStack Query (persist), aiq-design-system, Axios  
-Infra/Tooling: Docker Compose, Makefile, GitHub Actions (futuro), PHPStan, Pint, ESLint, Prettier
+- **Backend**: Uma API REST baseada em Laravel para gerenciar clientes e seus produtos favoritos. Inclui um proxy para buscar dados de produtos da Fake Store API, com cache (Redis) e manipulação de ETag HTTP.
+- **Frontend**: Uma SPA React construída com TypeScript e Vite, utilizando o `@aiqfome/aiq-design-system` para seus componentes de UI. Consome a API do backend para todas as operações de dados.
 
-## Estrutura Planejada
+## Stack de Tecnologias
+
+- **Backend**: PHP 8.3, Laravel 12, PostgreSQL, Redis, Sanctum, Scribe
+- **Frontend**: React 18, TypeScript, Vite, TanStack Query, `@aiqfome/aiq-design-system`, Axios
+- **Infra & Ferramentas**: Docker Compose, Makefile, GitHub Actions, PHPStan, Pint, ESLint, Prettier
+
+## Estrutura do Projeto
+
 ```
-backend/     # API Laravel
-frontend/    # SPA React
-infra/       # CI/CD, IaC, docker, pipelines
-docs/        # (estes planos podem migrar)
-tests/       # Integração/contratos adicionais
-```
-(Status atual: somente documentação.)
-
-## Roadmap (Resumo)
-1) Tooling & Makefile  
-2) Docker/Sail ambiente  
-3) Bootstrap Laravel  
-4) Migrations (customers, favorites)  
-5) CRUD Customers  
-6) Favorites  
-7) Produtos (proxy + cache)  
-8) Auth (Sanctum + abilities)  
-9) Rate limiting & headers  
-10) Problem Details global  
-11) Observabilidade
-12) Docs
-13) Frontend
-14) Qualidade  
-
-## Domínio (Essência)
-- customers: id, name, email (único case-insensitive)
-- favorites: (customer_id, product_id) único
-- products: não persistidos; proxy + cache Redis
-
-## Erros (Problem Details)
-Formato padrão (RFC 9457): `{ type, title, status, detail, instance }`  
-Mapearemos: validação, not-found, conflito (email), timeout upstream.
-
-## Autenticação & Abilities (Planejado)
-Sanctum tokens pessoais com abilities:  
-- `customers:*`  
-- `favorites:*`  
-- `products:read`  
-Rotas protegidas via middleware; rate limits leitura vs escrita.
-
-## Setup Rápido (Pré-Código)
-Quando os arquivos iniciais forem adicionados, o fluxo esperado (máx 5 comandos):
-```
-git clone <repo> && cd <repo>
-cp .env.example .env          # backend (quando existir)
-make setup                    # instala deps (composer/npm) + prepara containers
-docker compose up -d          # sobe postgres/redis/php-fpm/nginx
-make test                     # roda suíte (placeholder inicialmente)
-```
-(Enquanto o código não existe, `make` targets serão placeholders.)
-
-## Frontend (Step 14)
-Bootstrap iniciado em `frontend/` com:
-- Vite + React 18 + TypeScript
-- Router básico (rota `/` com placeholder)
-- TanStack Query + persistência em `localStorage` (chave `rq-cache`)
-- Provider de tema do `@aiqfome/aiq-design-system` (publicado no npm)
-
-Comandos (rodar dentro de `frontend/`):
-```
-npm ci
-npm run dev      # servidor Vite
-npm test         # Vitest (AppRendersTest, QueryClientPersistsTest)
-```
-Configuração de testes: Vitest + @testing-library/react (setup em `src/test/setup.ts`).
-
-## Frontend (Step 15)
-Camada HTTP e Auth inicial:
-- Cliente Axios em `src/lib/httpClient.ts` com `baseURL` via `VITE_API_BASE_URL` (fallback `/api`).
-- Interceptor de `Authorization` (usa token de `src/auth/tokenStore.ts`).
-- Parser de Problem Details e integração com toast (`src/lib/problemDetails.ts` e `src/lib/toast.ts`).
-- `401` dispara fluxo de logout (stub via `triggerLogout()`).
-
-Testes:
-- `AuthInterceptorAddsHeaderTest` valida header `Authorization`.
-- `ProblemDetailsToastTest` valida exibição de toast a partir de Problem Details.
-
-Env:
-- Defina `VITE_API_BASE_URL` em `.env` na raiz de `frontend/` se necessário (ex.: `http://localhost:8080/api`).
-
-## Ambiente Docker (Step 02)
-Serviços: nginx (8080), php-fpm, postgres (5432), redis (6379), mailhog (8025), frontend (Vite 5173).
-
-Comandos úteis:
-```
-make docker-up        # sobe stack e builda imagens
-make docker-ps        # status dos serviços
-make docker-logs      # logs (Ctrl+C para sair)
-make docker-down      # encerra e remove volumes
+.
+├── backend/     # Aplicação da API Laravel (veja backend/README.md)
+├── frontend/    # SPA React (veja frontend/README.md)
+├── infra/       # Configs do Docker, IaC, e outros ativos de infraestrutura
+└── tests/       # Testes de ponta-a-ponta e de integração
 ```
 
-Health básico:
-- API via Nginx: http://localhost:8080/
-- Health endpoint: http://localhost:8080/healthz (JSON {"status":"ok"})
-- Frontend (Vite) via Nginx: http://localhost:8080/app/
-  - Também direto: http://localhost:5173 (porta exposta)
-- Mailhog UI: http://localhost:8025
+## Domínio Principal
 
-Variáveis de ambiente Laravel esperadas em backend/.env.example (alinhadas ao Compose):
-- Postgres: host `postgres`, db `app`, user `app`, pass `secret`
-- Redis: host `redis`, port `6379`
-- Mail: host `mailhog`, port `1025`
+- **Clientes**: Identificados por `id`, com `name` e `email`. O email é único e case-insensitive.
+- **Favoritos**: Representa o produto favorito de um cliente. A ligação é uma combinação única de `customer_id` e `product_id`.
+- **Produtos**: Não são persistidos no banco de dados. São buscados de uma API externa através de um proxy e cacheados em Redis para melhorar a performance.
 
-## Backend Laravel (Step 03)
-Bootstrap automático dentro do container `php`.
+## Funcionalidades e Conceitos Chave
 
-Passos:
-```
-make docker-up           # garante containers
-make be-bootstrap        # instala Laravel 12.x, chaveia APP_KEY, logging JSON, middleware request_id
-make be-about            # executa php artisan about
-```
+### Tratamento de Erros (Problem Details)
 
-O bootstrap:
-- Cria projeto em `backend/` via Composer (se não existir)
-- Ajusta `.env` para logs JSON em `stderr`
-- Adiciona `App\Http\Middleware\RequestIdMiddleware` e registra globalmente
+Os erros da API seguem o padrão [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457). Isso fornece respostas de erro consistentes e legíveis por máquina em toda a aplicação (ex: para validação de entrada, recurso não encontrado, ou timeouts de upstream).
 
-Depois, a API deve responder via nginx/php-fpm quando rotas forem adicionadas.
+### Autenticação & Autorização
 
-## Makefile (Planejado)
-Targets: `setup`, `lint`, `fix`, `test`, `seed`, `docs`  
-- lint: Pint + PHPStan + ESLint
-- test: agrega BE (Pest) + FE (Vitest) + INT
-- docs: `php artisan scribe:generate` (após Step 12)
+A autenticação é gerenciada pelo Laravel Sanctum, usando tokens de acesso pessoal. O acesso às rotas é controlado pelas `abilities` do token:
+- `customers:*`: Acesso total ao gerenciamento de clientes.
+- `favorites:*`: Acesso total ao gerenciamento de favoritos.
+- `products:read`: Acesso de apenas leitura aos dados dos produtos.
 
-## Qualidade & Segurança
-- PHPStan nível 6 (elevar depois)
-- Pint + ESLint/Prettier
-- Rate limiting: leitura 60/min, escrita 20/min
-- Headers segurança: CSP básica, X-Frame-Options, X-Content-Type-Options
-- Inputs validados por FormRequest / DTO
-- Logs JSON + request_id
+### Qualidade & Segurança
 
-## Observabilidade (Futuro)
-- Logs estruturados (request_id, user_id)
-- Métricas (latência, erros, acertos de cache)
-- /healthz (db, redis, upstream)
-- Sentry (erro) + possível tracing (OpenTelemetry stub)
+- **Análise Estática**: PHPStan (nível 6) para o backend.
+- **Estilo de Código**: Forçado pelo Pint (PHP) e ESLint/Prettier (TypeScript/JS).
+- **Rate Limiting**: As rotas da API têm limite de requisições para prevenir abuso (ex: 60 leituras/min, 20 escritas/min).
+- **Cabeçalhos de Segurança**: Um conjunto de cabeçalhos HTTP que aumentam a segurança (CSP, X-Frame-Options, etc.) são aplicados a todas as respostas.
+- **Logs Estruturados**: Todos os logs estão em formato JSON e incluem um `request_id` para facilitar o rastreamento e a depuração.
 
-## Testes (Filosofia)
-Cada Step do roadmap adiciona novos testes sem remover antigos. Categorias:
-- BE (Pest), FE (Vitest), INT (contratos / snapshots), QA (scripts autom. futuros)
-Executar sempre: `make test`.
+## Ambiente de Desenvolvimento Local
 
-## Contribuição
-Commits: Conventional Commits (feat, fix, docs, chore, refactor, test).  
-PRs: descrição clara + escopo pequeno + link para issue (Se existente).
+Todo o ambiente de desenvolvimento é gerenciado via Docker Compose e um `Makefile`.
 
-## Próximos Passos Imediatos
-1. Adicionar Makefile esqueleto + editorconfig
-2. Configurar Docker Compose (php-fpm, nginx, postgres, redis)
-3. Instalar Laravel + bootstrap inicial (timezone, logging JSON)
-4. Escrever primeiras migrations + testes base (Pest)
+### Início Rápido
+
+1.  **Clone o repositório**:
+    ```bash
+    git clone <repo> && cd <repo>
+    ```
+2.  **Copie os arquivos de ambiente**:
+    ```bash
+    cp backend/.env.example backend/.env
+    cp frontend/.env.example frontend/.env
+    ```
+3.  **Construa e inicie os serviços**:
+    ```bash
+    make setup
+    ```
+    Este comando instala todas as dependências (Composer & npm) e inicia os contêineres Docker em segundo plano.
+
+### Comandos Úteis
+
+- `make docker-up`: Constrói e inicia os contêineres Docker.
+- `make docker-down`: Para e remove os contêineres e volumes Docker.
+- `make docker-ps`: Mostra o status dos serviços em execução.
+- `make docker-logs`: Exibe os logs de todos os serviços.
+- `make test`: Roda a suíte de testes completa para backend e frontend.
+- `make lint`: Verifica o estilo de código de todo o projeto.
+- `make fix`: Corrige automaticamente problemas de estilo.
+
+### Acessando os Serviços
+
+- **API (via Nginx)**: `http://localhost:8080/`
+- **Frontend (via Nginx)**: `http://localhost:8080/app/`
+- **Frontend (Servidor de Dev Vite)**: `http://localhost:5173/`
+- **Mailhog UI**: `http://localhost:8025/`
+- **Banco de Dados (PostgreSQL)**: `localhost:5432`
+- **Cache (Redis)**: `localhost:6379`

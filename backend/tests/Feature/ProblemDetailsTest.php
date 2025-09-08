@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +19,7 @@ class ProblemDetailsTest extends TestCase
         $res->assertStatus(422)
             ->assertHeader('Content-Type', 'application/problem+json')
             ->assertJsonStructure([
-                'type', 'title', 'status', 'detail', 'instance', 'errors' => ['name', 'email']
+                'type', 'title', 'status', 'detail', 'instance', 'errors' => ['name', 'email'],
             ]);
     }
 

@@ -69,4 +69,3 @@ class CustomerCrudTest extends TestCase
         $this->assertDatabaseMissing('customers', ['id' => $customer->id]);
     }
 }
-

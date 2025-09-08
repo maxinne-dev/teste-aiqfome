@@ -21,4 +21,3 @@ class FavoriteFactory extends Factory
         ];
     }
 }
-
