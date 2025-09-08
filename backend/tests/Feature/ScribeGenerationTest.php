@@ -15,14 +15,14 @@ class ScribeGenerationTest extends TestCase
         // TODO: Enable test when Scribe can be debugged
         $this->assertTrue(true);
         // Run docs generator (Scribe if available, else fallback stub)
-//        Artisan::call('docs:generate');
-//
-//        $this->assertFileExists(base_path('public/docs/openapi.yaml'));
-//        $this->assertFileExists(base_path('public/docs/index.html'));
-//
-//        $yaml = file_get_contents(base_path('public/docs/openapi.yaml'));
-//        $this->assertStringContainsString('openapi: "3.0.3"', $yaml);
-//        $this->assertStringContainsString('Customers', $yaml);
-//        $this->assertStringContainsString('/api/v1/customers', $yaml);
+        // Artisan::call('docs:generate');
+        //
+        // $this->assertFileExists(base_path('public/docs/openapi.yaml'));
+        // $this->assertFileExists(base_path('public/docs/index.html'));
+        //
+        // $yaml = file_get_contents(base_path('public/docs/openapi.yaml'));
+        // $this->assertStringContainsString('openapi: "3.0.3"', $yaml);
+        // $this->assertStringContainsString('Customers', $yaml);
+        // $this->assertStringContainsString('/api/v1/customers', $yaml);
     }
 }
