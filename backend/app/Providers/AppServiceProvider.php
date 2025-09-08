@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register Scribe translations namespace
         $this->app['translator']->addNamespace('scribe', base_path('vendor/knuckleswtf/scribe/lang'));
-        
+
         // API rate limiting policies (configurable)
         $read = config('api.throttle.read');
         $write = config('api.throttle.write');
