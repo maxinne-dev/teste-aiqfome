@@ -12,7 +12,7 @@ class WorkflowPresenceTest extends TestCase
     public function test_ci_workflow_exists(): void
     {
         $path = base_path('../.github/workflows/ci.yml');
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             // When running inside backend working dir, base_path('../') points to repo root
             $path = base_path('.github/workflows/ci.yml');
         }
@@ -22,6 +22,5 @@ class WorkflowPresenceTest extends TestCase
         $this->assertStringContainsString('jobs:', $yaml);
         $this->assertStringContainsString('backend:', $yaml);
         $this->assertStringContainsString('phpunit', $yaml);
-      }
+    }
 }
-

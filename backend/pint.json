@@ -9,7 +9,8 @@
   "exclude": [
     "vendor",
     "storage",
-    "bootstrap/cache"
+    "bootstrap/cache",
+    "var/phpstan"
   ]
 }
 

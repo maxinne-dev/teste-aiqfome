@@ -25,4 +25,3 @@ class RateLimitReadTest extends TestCase
         $blocked->assertStatus(429)->assertHeader('Content-Type', 'application/problem+json');
     }
 }
-

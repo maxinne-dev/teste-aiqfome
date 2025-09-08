@@ -20,7 +20,6 @@ class StaticAnalysisNoErrorsTest extends TestCase
 
         $data = json_decode(file_get_contents($reportPath), true);
         $this->assertIsArray($data);
-        $this->assertEquals(0, (int)($data['summary']['count'] ?? -1));
+        $this->assertEquals(0, (int) ($data['summary']['count'] ?? -1));
     }
 }
-

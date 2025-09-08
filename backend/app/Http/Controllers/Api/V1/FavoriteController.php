@@ -7,11 +7,13 @@ use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Resources\FavoriteResource;
 use App\Models\Customer;
 use App\Models\Favorite;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class FavoriteController extends Controller
 {
-    public function index(Customer $customer)
+    public function index(Customer $customer): AnonymousResourceCollection
     {
         $favorites = Favorite::query()
             ->where('customer_id', $customer->id)
@@ -21,7 +23,7 @@ class FavoriteController extends Controller
         return FavoriteResource::collection($favorites);
     }
 
-    public function store(StoreFavoriteRequest $request, Customer $customer)
+    public function store(StoreFavoriteRequest $request, Customer $customer): JsonResponse
     {
         $productId = (int) $request->validated()['product_id'];
 
@@ -36,7 +38,7 @@ class FavoriteController extends Controller
         return $resource->response()->setStatusCode($status);
     }
 
-    public function destroy(Customer $customer, int $productId)
+    public function destroy(Customer $customer, int $productId): Response
     {
         Favorite::query()
             ->where('customer_id', $customer->id)
@@ -46,4 +48,3 @@ class FavoriteController extends Controller
         return response()->noContent();
     }
 }
-

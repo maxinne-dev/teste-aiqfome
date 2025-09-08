@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Laravel\Sanctum\Sanctum;
 use App\Models\User;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Schema;
+use Laravel\Sanctum\Sanctum;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -26,4 +26,3 @@ abstract class TestCase extends BaseTestCase
         }
     }
 }
-

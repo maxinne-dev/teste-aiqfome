@@ -22,4 +22,3 @@ class HealthzDbFailSimulationTest extends TestCase
             ->assertJsonPath('checks.db.status', 'fail');
     }
 }
-

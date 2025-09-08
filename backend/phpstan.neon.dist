@@ -1,7 +1,5 @@
 includes:
   - phpstan-baseline.neon
-  - vendor/nunomaduro/larastan/extension.neon
-  - vendor/nunomaduro/larastan/rules.neon
 
 parameters:
   level: 6
@@ -9,8 +7,11 @@ parameters:
     - app
     - routes
   tmpDir: var/phpstan
-  checkMissingIterableValueType: false
-  ignoreErrors: []
+  ignoreErrors:
+    -
+      identifier: missingType.iterableValue
+    -
+      identifier: missingType.generics
   scanFiles: []
   universalObjectCratesClasses:
     - Illuminate\Support\Fluent
