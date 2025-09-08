@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -13,7 +14,7 @@ class DevAuthController extends Controller
      * List users for selection in tools/UIs.
      * If test@example.com exists, flag it as default and put it first.
      */
-    public function users(Request $request)
+    public function users(Request $request): JsonResponse
     {
         $users = User::query()
             ->select(['id', 'name', 'email'])
@@ -25,7 +26,7 @@ class DevAuthController extends Controller
         $defaultUserId = null;
 
         // Promote default user to the top and tag it
-        usort($users, function ($a, $b) use ($defaultEmail, &$defaultUserId) {
+        usort($users, function ($a, $b) use ($defaultEmail) {
             $aIsDefault = strcasecmp($a['email'], $defaultEmail) === 0;
             $bIsDefault = strcasecmp($b['email'], $defaultEmail) === 0;
             if ($aIsDefault && ! $bIsDefault) {
@@ -60,7 +61,7 @@ class DevAuthController extends Controller
      * `php artisan user:token {email} --abilities=*`.
      * Body: { email: string, abilities?: string | string[] }
      */
-    public function issueToken(Request $request)
+    public function issueToken(Request $request): JsonResponse
     {
         $data = $request->validate([
             'email' => ['required', 'email'],
@@ -85,7 +86,7 @@ class DevAuthController extends Controller
         }
 
         // Default ability mirrors the console command behavior
-        if (! $abilities || count($abilities) === 0) {
+        if (! $abilities) {
             $abilities = ['products:read'];
         }
 

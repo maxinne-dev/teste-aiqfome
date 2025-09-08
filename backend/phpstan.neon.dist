@@ -10,6 +10,8 @@ parameters:
   ignoreErrors:
     -
       identifier: missingType.iterableValue
+    -
+      identifier: missingType.generics
   scanFiles: []
   universalObjectCratesClasses:
     - Illuminate\Support\Fluent

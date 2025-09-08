@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +11,7 @@ use Throwable;
 
 class HealthController extends Controller
 {
-    public function __invoke()
+    public function __invoke(): JsonResponse
     {
         $simulate = request()->query('simulate');
 
@@ -30,7 +31,7 @@ class HealthController extends Controller
         try {
             if (class_exists(\Illuminate\Support\Facades\Redis::class)) {
                 // Only attempt if configured; guard missing extension/services
-                Redis::connection()->client('PING');
+                Redis::connection()->ping();
                 $redis = ['status' => 'ok'];
             }
         } catch (Throwable $e) {
@@ -55,7 +56,7 @@ class HealthController extends Controller
         $core = ['db', 'upstream'];
         $overall = collect($checks)
             ->filter(fn ($_, $k) => in_array($k, $core, true))
-            ->every(fn ($c) => ($c['status'] ?? 'ok') !== 'fail') ? 'ok' : 'fail';
+            ->every(fn ($c) => $c['status'] !== 'fail') ? 'ok' : 'fail';
 
         Log::info('healthz', ['status' => $overall, 'checks' => $checks]);
 

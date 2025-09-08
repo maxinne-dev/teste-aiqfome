@@ -151,7 +151,6 @@ Artisan::command('code:analyze', function () {
     $root = base_path();
     $dirs = ['app', 'routes', 'tests'];
     $bannedNames = ['dd', 'dump', 'var_dump'];
-    $flagExitDie = true; // detect 'exit' and 'die' keywords
 
     $issues = [];
     foreach ($dirs as $dir) {
@@ -170,7 +169,7 @@ Artisan::command('code:analyze', function () {
                         continue;
                     }
                     // exit/die are special keywords
-                    if ($flagExitDie && ($id === T_EXIT)) {
+                    if ($id === T_EXIT) {
                         $issues[] = [
                             'file' => str_replace($root.'/', '', $file->getRealPath()),
                             'issue' => "Forbidden call 'exit/die'",
