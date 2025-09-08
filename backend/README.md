@@ -1,56 +1,37 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend (API Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este documento fornece detalhes específicos para o desenvolvimento e manutenção da aplicação backend em Laravel. Para uma visão geral de alto nível de todo o projeto, consulte o [README.md principal](../README.md).
 
-## About Laravel
+## Documentação da API
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A documentação da API é gerada usando o [Scribe](https://scribe.knuckles.wtf/laravel).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Configuração**: `config/scribe.php` (visa as rotas `api/*`).
+- **Saída**: `public/docs/` (inclui um arquivo YAML OpenAPI 3.0.3 e uma página HTML amigável).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Para gerar a documentação, execute o seguinte comando a partir do diretório `backend/`:
 
-## API Documentation
+```bash
+php artisan scribe:generate
+```
 
-- Real docs via Scribe (preferred):
-  - Install dev deps (`composer install`) to enable Scribe's generator.
-  - Run `php artisan scribe:generate` to produce rich docs.
-  - Config: `config/scribe.php` (OpenAPI 3.0.3; matches `api/*` routes).
-  - Outputs to `public/docs/`.
-- Fallback (when Scribe not installed):
-  - Use `php artisan docs:generate` which generates a minimal OpenAPI file and index.
-  - Outputs to `public/docs/openapi.yaml` and `public/docs/index.html`.
+Você pode então visualizar a documentação HTML gerada em `public/docs/index.html`.
 
-## Developer Commands
+## Comandos de Desenvolvedor
 
-- `composer test`: clears config and runs the test suite.
-- `composer lint`: checks code style with Pint (no changes).
-- `composer lint:fix`: fixes code style with Pint.
-- `composer stan`: runs PHPStan (with Larastan) using `phpstan.neon.dist`.
-- `composer docs`: generates API docs (Scribe if installed, fallback otherwise).
+Os seguintes scripts `composer` estão disponíveis por conveniência:
 
-## Test DB Strategy
+- `composer test`: Limpa o cache de configuração e executa a suíte de testes completa (Pest).
+- `composer lint`: Verifica o estilo do código com o Pint.
+- `composer lint:fix`: Corrige automaticamente problemas de estilo de código com o Pint.
+- `composer stan`: Executa análise estática usando PHPStan com a configuração de `phpstan.neon.dist`.
+- `composer docs`: Um atalho para `php artisan scribe:generate`.
 
-- Default: PHPUnit runs with in-memory SQLite for isolation and speed.
-  - Configured in `phpunit.xml`: `DB_CONNECTION=sqlite`, `DB_DATABASE=":memory:"`.
-  - Requires PHP extensions: `pdo_sqlite` and `sqlite3` (enabled in Docker setup).
-- Postgres-specific migrations are guarded.
-  - `citext` extension and `ALTER TYPE` run only when the driver is `pgsql`.
-  - Schema (unique constraints, FKs) remains portable across drivers.
-- Sanctum in tests: product endpoints auto-auth in the base `TestCase` so most tests can hit
-  them without boilerplate; `AuthAbilitiesTest` explicitly verifies auth/abilities flows.
-- Run against Postgres (optional): override DB env vars when invoking PHPUnit, e.g.
+## Estratégia de Banco de Dados para Testes
+
+- **Padrão**: Os testes são executados em um banco de dados SQLite em memória para velocidade e isolamento. Isso é configurado no `phpunit.xml`. Requer as extensões PHP `pdo_sqlite` e `sqlite3`, que estão incluídas no ambiente Docker.
+- **Compatibilidade com Postgres**: Migrações que usam recursos específicos do PostgreSQL (como a extensão `citext`) são protegidas para serem executadas apenas quando o driver do banco de dados é `pgsql`. Isso garante que o schema permaneça portável.
+- **Executando Testes com Postgres (Opcional)**: Para executar testes na instância do PostgreSQL dockerizada, você pode sobrescrever as variáveis de ambiente definidas no `phpunit.xml`:
 
   ```bash
   DB_CONNECTION=pgsql \
@@ -62,91 +43,20 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
   ./vendor/bin/phpunit
   ```
 
-  Ensure `pdo_pgsql` is installed if running outside Docker.
+## Rotas de Apoio para Desenvolvimento/Teste
 
-## Dev/Test Helpers
+Para facilitar o desenvolvimento e os testes locais, estão disponíveis endpoints de autenticação especiais. Essas rotas são **desabilitadas por padrão** e podem ser ativadas definindo `FEATURE_DEV_AUTH_ROUTES=true` no arquivo `backend/.env`.
 
-These convenience endpoints help during local testing to pick a user and obtain a bearer token (Sanctum):
+- **Listar Usuários**: `GET /api/v1/dev/users`
+  - Retorna uma lista de usuários, destacando `test@example.com` se existir.
+- **Obter Token de Acesso**: `POST /api/v1/dev/token`
+  - Emite um token Sanctum para um usuário especificado.
+  - **Corpo**: `{ "email": "user@example.com", "abilities": ["products:read"] }`
+  - Se `abilities` for omitido, `products:read` é usado como padrão.
+  - O usuário `test@example.com` receberá um token com todas (`*`) as habilidades.
 
-- GET `/api/v1/dev/users`: lists users as `{ id, name, email, isDefault }` and includes `default_user_id` and `default_email`.
-  - If `test@example.com` exists, it appears first with `isDefault: true`.
-- POST `/api/v1/dev/token`: issues a token for a given email.
-  - Body: `{ "email": "user@example.com", "abilities": ["products:read"] }`.
-  - `abilities` can be an array or a comma-separated string. If omitted, defaults to `products:read`.
-  - Special case: if `email` is `test@example.com`, the token is created with `['*']` (all abilities) to facilitate admin-style tests.
+## Cabeçalhos de Segurança
 
-Rate limits: `throttle:api-read` for the list endpoint, `throttle:api-write` for token issuance.
+Um middleware dedicado (`App\Http\Middleware\SecurityHeadersMiddleware`) é registrado globalmente para adicionar importantes cabeçalhos de segurança a todas as respostas. Estes incluem `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, e outros para segurança aprimorada.
 
-Feature flag: disabled by default. Enable with `FEATURE_DEV_AUTH_ROUTES=true` in `backend/.env` and reload config.
-When disabled, the routes are not registered.
-
-## Security Headers
-
-- Middleware: `App\Http\Middleware\SecurityHeadersMiddleware` adds safe defaults:
-  - `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
-    `Referrer-Policy: no-referrer`, `X-XSS-Protection: 0`.
-  - `Cross-Origin-Resource-Policy: same-site`, `Cross-Origin-Opener-Policy: same-origin`,
-    `Permissions-Policy: geolocation=(), microphone=(), camera=()`.
-- HSTS (Strict-Transport-Security): enabled only when both are true:
-  - `APP_ENV=production` and the request is HTTPS (`isSecure()` or `X-Forwarded-Proto: https`).
-  - Behind a proxy/ingress, configure trusted proxies so forwarded proto is honored:
-    https://laravel.com/docs/12.x/requests#trusting-all-proxies
-  - Header value: `max-age=31536000; includeSubDomains; preload`.
-
-## API Documentation
-
-- Stub generator: `php artisan scribe:generate` produces minimal docs without external
-  dependencies (used for Step 12 tests).
-  - Outputs to `public/docs/openapi.yaml` (OpenAPI 3.0.3) and `public/docs/index.html`.
-  - Tags included: Customers, Favorites, Products, Auth. Products endpoints require
-    bearer tokens in docs.
-- Run:
-
-  ```bash
-  cd backend
-  php artisan scribe:generate
-  ```
-
-  Then open `backend/public/docs/index.html` in a browser.
-
-> Note: To adopt full Scribe later, add the package via Composer and replace this stub
-> with Scribe config (`config/scribe.php`). Tests can be adapted to validate richer output.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+O HSTS (`Strict-Transport-Security`) é ativado automaticamente no ambiente de `production` em respostas HTTPS.
